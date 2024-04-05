@@ -26,6 +26,7 @@ public class PetService {
     private final HistoryLogService historyLogService;
 
     public User buyPet(User user) {
+        log.info("Buying a pet for user " + user.getFullName());
         List<Pet> availablePets = petRepository.findAllByOwnerIsNull();
         availablePets.forEach(pet -> {
             if (pet.price() <= user.getBudget()) {
@@ -42,6 +43,7 @@ public class PetService {
     }
 
     public List<PetDTO> createRandomPets() {
+        log.info("Creating random pets");
         Random random = new Random();
         return IntStream.range(0, random.nextInt(1, 21))
             .mapToObj(d -> {

@@ -1,0 +1,14 @@
+type PetDTO {
+    id: ID
+    name: String!
+    type: PetType!
+    description: String!
+    dateOfBirth: String!
+    rating: Int
+    owner: String
+}
+
+enum PetType {
+    CAT,
+    DOG
+}

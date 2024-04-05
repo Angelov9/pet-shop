@@ -1,0 +1,8 @@
+type UserDTO {
+    id: ID
+    firstName: String!
+    lastName: String!
+    emailAddress: String
+    budget: Int!
+    pets: [PetDTO]
+}

@@ -9,8 +9,10 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class UserService {
@@ -20,6 +22,7 @@ public class UserService {
     private final HistoryLogService historyLogService;
 
     public void buyPets() {
+        log.info("Buying pets");
         LocalDate today = LocalDate.now();
         List<User> users = userRepository.findAllByBudget();
         userRepository.saveAll(users.stream().map(petService::buyPet).toList());
@@ -39,6 +42,7 @@ public class UserService {
     }
 
     public List<UserDTO> createRandomUsers() {
+        log.info("Creating random users");
         Random random = new Random();
         return userRepository.saveAll(
                 IntStream.range(0, random.nextInt(1, 11))

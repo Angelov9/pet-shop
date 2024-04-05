@@ -1,0 +1,8 @@
+# All available queries on this qraphql server
+
+type Query {
+    listUsers: [UserDTO]
+    createUsers: [UserDTO]
+    listPets: [PetDTO]
+    createPets: [PetDTO]
+}
