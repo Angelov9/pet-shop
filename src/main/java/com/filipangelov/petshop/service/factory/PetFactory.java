@@ -1,4 +1,4 @@
-package com.filipangelov.petshop.domain.factory;
+package com.filipangelov.petshop.service.factory;
 
 import com.filipangelov.petshop.domain.Cat;
 import com.filipangelov.petshop.domain.Dog;
@@ -18,18 +18,6 @@ public class PetFactory {
 
     private final CatRepository catRepository;
     private final DogRepository dogRepository;
-
-    public Pet updatePet(Pet pet) {
-        switch (PetType.valueOf(pet.petType())) {
-            case CAT -> {
-                return catRepository.save((Cat) pet);
-            }
-            case DOG -> {
-                return dogRepository.save((Dog) pet);
-            }
-            default -> throw new PetTypeNotSupportedException(pet.petType());
-        }
-    }
 
     public Pet createPet(PetType type, String name, String description, LocalDate dateOfBirth) {
         switch (type) {
@@ -52,6 +40,18 @@ public class PetFactory {
                         .build());
             }
             default -> throw new PetTypeNotSupportedException(type.name());
+        }
+    }
+
+    public Pet updatePet(Pet pet) {
+        switch (PetType.valueOf(pet.petType())) {
+            case CAT -> {
+                return catRepository.save((Cat) pet);
+            }
+            case DOG -> {
+                return dogRepository.save((Dog) pet);
+            }
+            default -> throw new PetTypeNotSupportedException(pet.petType());
         }
     }
 }

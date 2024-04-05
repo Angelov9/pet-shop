@@ -2,8 +2,8 @@ package com.filipangelov.petshop.service;
 
 import com.filipangelov.petshop.domain.User;
 import com.filipangelov.petshop.dto.UserDTO;
-import com.filipangelov.petshop.exceptions.UserNotFoundException;
 import com.filipangelov.petshop.repository.UserRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -17,27 +17,21 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PetService petService;
+    private final HistoryLogService historyLogService;
 
-    public UserDTO createOrUpdateUser(UserDTO userDTO) {
-        return Optional.ofNullable(userDTO.id())
-            .map(userId -> mapToDTO(userRepository.findById(userDTO.id()).map(u -> {
-                u.setFirstName(userDTO.firstName());
-                u.setLastName(userDTO.lastName());
-                u.setEmailAddress(userDTO.emailAddress());
-                u.setBudget(userDTO.budget());
-                return userRepository.save(u);
-            }).orElseThrow(() -> new UserNotFoundException(userDTO.firstName(), userDTO.lastName()))))
-            .orElseGet(() -> mapToDTO(userRepository.save(User.builder()
-                .firstName(userDTO.firstName())
-                .lastName(userDTO.lastName())
-                .emailAddress(userDTO.emailAddress())
-                .budget(userDTO.budget())
-                .build())));
-    }
+    public void buyPets() {
+        LocalDate today = LocalDate.now();
+        List<User> users = userRepository.findAllByBudget();
+        userRepository.saveAll(users.stream().map(petService::buyPet).toList());
 
-    private UserDTO mapToDTO(User user) {
-        return new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmailAddress(),
-            user.getBudget(), Optional.ofNullable(user.getPets()).map(petService::mapPetsDTO).orElse(List.of()));
+        List<Long> usersBoughtAPetToday = petService.usersBoughtAPetOnDate(today);
+
+        historyLogService.userNotAllowedToBuyAnyPet(today,
+            users.size() - users.stream()
+                .map(User::getId)
+                .filter(usersBoughtAPetToday::contains)
+                .toList()
+                .size());
     }
 
     public List<UserDTO> findAll() {
@@ -45,16 +39,16 @@ public class UserService {
     }
 
     public List<UserDTO> createRandomUsers() {
-        Random oneRandom = new Random();
+        Random random = new Random();
         return userRepository.saveAll(
-                IntStream.range(0, oneRandom.nextInt(1, 11))
+                IntStream.range(0, random.nextInt(1, 11))
                     .mapToObj(d -> {
-                        var userNumber = oneRandom.nextInt(1, 1001);
+                        var userNumber = random.nextInt(1, 1001);
                         return User.builder()
                             .firstName("First" + userNumber)
                             .lastName("Last" + userNumber)
                             .emailAddress("first.last" + userNumber + "@mail.com")
-                            .budget(oneRandom.nextInt(1,16))
+                            .budget(random.nextInt(1, 16))
                             .build();
                     })
                     .toList())
@@ -63,12 +57,8 @@ public class UserService {
             .toList();
     }
 
-    public void buyPets() {
-        userRepository.findAllByBudget().forEach(user -> userRepository.save(petService.buyPet(user)));
-    }
-
-    public void buyPet() {
-        // todo: user must have enough budget to buy a pet
-        // todo: cannot buy a pet with owner
+    private UserDTO mapToDTO(User user) {
+        return new UserDTO(user.getId(), user.getFirstName(), user.getLastName(), user.getEmailAddress(),
+            user.getBudget(), Optional.ofNullable(user.getPets()).map(petService::mapPetsDTO).orElse(List.of()));
     }
 }

@@ -14,7 +14,6 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,16 +49,16 @@ public abstract class Pet {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
-    @Transient
+    @Column(name = "date_of_owner_ship")
+    private LocalDate dateOfOwnerShip;
+
     public String petType() {
         DiscriminatorValue val = this.getClass().getAnnotation(DiscriminatorValue.class);
 
         return val.value();
     }
 
-    //@Override
     public abstract int price();
 
-    //@Override
     public abstract String aPetIsBought();
 }
