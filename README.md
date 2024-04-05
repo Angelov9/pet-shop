@@ -16,3 +16,9 @@ This project uses Maven, it needs mvn clean build install in the start and after
 ### GraphQL
 
 The application is using [GraphQL](https://github.com/graphql-java-kickstart). I use it first time and I managed to create queries for creating and listing pets and users.
+It works on the defualt path: **/graphql**
+queries:
+* listUsers
+* createUsers
+* listPets
+* createPets 
