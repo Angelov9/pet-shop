@@ -25,6 +25,9 @@ public class PetService {
     private final PetFactory petFactory;
     private final HistoryLogService historyLogService;
 
+    /**
+     * This is a greedy approach of buying pets to all users which budget is bigger than 0 and also the pets should not
+     * have an owner. This method is also writing in the HistoryLog.*/
     public User buyPet(User user) {
         log.info("Buying a pet for user " + user.getFullName());
         List<Pet> availablePets = petRepository.findAllByOwnerIsNull();
